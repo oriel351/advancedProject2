@@ -126,6 +126,7 @@ namespace WindowsImageService
         protected override void OnContinue()
         {
             eventLog1.WriteEntry("In OnContinue.");
+            eventLog1.WriteEntry("Oriel and sapphire are the king ");
         }
 
         private void eventLog1_EntryWritten(object sender, EntryWrittenEventArgs e)

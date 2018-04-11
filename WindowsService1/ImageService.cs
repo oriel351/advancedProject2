@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -8,6 +7,14 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System;
+using ImageService.Server;
+using ImageService.Controller;
+using ImageService.Modal;
+using ImageService.Logging;
+using ImageService.Logging.Modal;
+using System.Configuration;
+using ImageService.Infrastructure;
 
 
 
@@ -44,6 +51,11 @@ namespace WindowsImageService
 
     public partial class ImageService : ServiceBase
     {
+        private ImageServer m_imageServer;          // The Image Server
+        private IImageServiceModal modal;
+        private IImageController controller;
+        private ILoggingService logging;
+
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
         

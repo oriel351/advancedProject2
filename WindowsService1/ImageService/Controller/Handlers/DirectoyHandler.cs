@@ -11,6 +11,7 @@ using ImageService.Logging;
 using ImageService.Logging.Modal;
 using System.Text.RegularExpressions;
 
+
 namespace ImageService.Controller.Handlers
 {
     public class DirectoyHandler : IDirectoryHandler
@@ -24,6 +25,16 @@ namespace ImageService.Controller.Handlers
 
         public event EventHandler<DirectoryCloseEventArgs> DirectoryClose;              // The Event That Notifies that the Directory is being closed
 
-		// Implement Here!
+        void StartHandleDirectory(string dirPath)
+        {
+
+        }
+
+        void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
+        {     // The Event that will be activated upon new Command
+
+        }
+
+        // Implement Here!
     }
 }

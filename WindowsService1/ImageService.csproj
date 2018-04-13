@@ -48,50 +48,56 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\ICommand.cs" />
-    <Compile Include="Commands\NewFileCommand.cs" />
-    <Compile Include="Controller\Handlers\DirectoyHandler.cs" />
-    <Compile Include="Controller\Handlers\IDirectoryHandler.cs" />
-    <Compile Include="Controller\IImageController.cs" />
-    <Compile Include="Controller\ImageController.cs" />
-    <Compile Include="ImageService.cs">
+    <Compile Include="ImageService\Commands\ICommand.cs" />
+    <Compile Include="ImageService\Commands\NewFileCommand.cs" />
+    <Compile Include="ImageService\Controller\Handlers\DirectoyHandler.cs" />
+    <Compile Include="ImageService\Controller\Handlers\IDirectoryHandler.cs" />
+    <Compile Include="ImageService\Controller\IImageController.cs" />
+    <Compile Include="ImageService\Controller\ImageController.cs" />
+    <Compile Include="ImageService\ImageService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ImageService.Designer.cs">
+    <Compile Include="ImageService\ImageService.Designer.cs">
       <DependentUpon>ImageService.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageService.Infrastructure\Enums\CommandEnum.cs" />
-    <Compile Include="ImageService.Logging\ILoggingService.cs" />
-    <Compile Include="ImageService.Logging\LoggingService.cs" />
-    <Compile Include="ImageService.Logging\Modal\MessageRecievedEventArgs.cs" />
-    <Compile Include="ImageService.Logging\Modal\MessageTypeEnum.cs" />
-    <Compile Include="Modal\Event\CommandRecievedEventArgs.cs" />
-    <Compile Include="Modal\Event\DirectoryCloseEventArgs.cs" />
-    <Compile Include="Modal\IImageServiceModal.cs" />
-    <Compile Include="Modal\ImageServiceModal.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="ProjectInstaller.cs">
+    <Compile Include="ImageService\Modal\Event\CommandRecievedEventArgs.cs" />
+    <Compile Include="ImageService\Modal\Event\DirectoryCloseEventArgs.cs" />
+    <Compile Include="ImageService\Modal\IImageServiceModal.cs" />
+    <Compile Include="ImageService\Modal\ImageServiceModal.cs" />
+    <Compile Include="ImageService\Program.cs" />
+    <Compile Include="ImageService\ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ProjectInstaller.Designer.cs">
+    <Compile Include="ImageService\ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImageService\Server\ImageServer.cs" />
+    <Compile Include="Infrastructure\Enums\CommandEnum.cs" />
+    <Compile Include="Logging\ILoggingService.cs" />
+    <Compile Include="Logging\LoggingService.cs" />
+    <Compile Include="Logging\Modal\MessageRecievedEventArgs.cs" />
+    <Compile Include="Logging\Modal\MessageTypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server\ImageServer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="bin\Debug\InstallUtil.InstallLog" />
+    <None Include="bin\Debug\WindowsService1.InstallLog" />
+    <None Include="bin\Debug\WindowsService1.InstallState" />
+    <None Include="ImageService\App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ImageService.resx">
+    <Folder Include="bin\Release\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\WindowsService1.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ImageService\ImageService.resx">
       <DependentUpon>ImageService.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProjectInstaller.resx">
+    <EmbeddedResource Include="ImageService\ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ProgramInstaller\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

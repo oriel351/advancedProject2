@@ -41,33 +41,30 @@ namespace ImageService.Controller.Handlers
             //getting the info of the message about the path
             m_logging.Log("Start Handeling Directory-" + dirPath, MessageTypeEnum.INFO);
             //extract the files in our directory in order to watch them
-            string[] filesInDirectory = Directory.GetFiles(m_path);
-            
-            
-            
+            string[] files = Directory.GetFiles(m_path);
             //we want to add all the files in the directory to the output dir folder
             //so we move on each path in the current directory
-            //
+            //now we will filter the relevant files by their exstentions
             //we finaly want to add all the relevant files to the outputdir
-            foreach (string filePathInDirectory in filesInDirectory)
+            foreach (string filePathInDirectory in files)
             {
-
-                m_logging.Log("Start Handle Directory - " + filePathInDirectory, MessageTypeEnum.INFO);
-                string imageExtension = Path.GetExtension(filePathInDirectory);
-               
-                if (this.m_imageSuffix.Contains(imageExtension))
+                //document to the logger the handeling of the directory
+                m_logging.Log("Start handeling directory:" + filePathInDirectory, MessageTypeEnum.INFO);
+                //filtering the files by their suffix
+                if (this.m_imageSuffix.Contains(Path.GetExtension(filePathInDirectory)))
                 {
-                    string[] arguments = { filePathInDirectory };
-                    OnCommandRecieved(this, new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
-                        arguments, filePathInDirectory));
+                    string[] relevantfiles = {filePathInDirectory};
+                    CommandRecievedEventArgs e = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand,
+                        relevantfiles, filePathInDirectory);
+                    OnCommandRecieved(this, e);
                 }
             }
             //Add new file system event handler
-            this.m_dirWatcher.Created += new FileSystemEventHandler(onDirWatcherCreate);
-            this.m_dirWatcher.Changed += new FileSystemEventHandler(onDirWatcherCreate);
+            this.m_dirWatcher.Created += new FileSystemEventHandler(onCreate);
+            this.m_dirWatcher.Changed += new FileSystemEventHandler(onCreate);
 
             //Set the listener to listen
-            this.m_logging.Log("Start Handle Directory - " + dirPath, MessageTypeEnum.INFO);
+            this.m_logging.Log("Start handeling dir: " + dirPath, MessageTypeEnum.INFO);
             this.m_dirWatcher.EnableRaisingEvents = true;
 
         }

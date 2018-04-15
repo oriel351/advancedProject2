@@ -63,12 +63,15 @@ namespace ImageService.Modal
                     imageYear = currentDate.Year.ToString();
                     imageMonth = currentDate.Month.ToString();
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
                     //create a new directory for the output folder
                     DirectoryInfo output = Directory.CreateDirectory(m_OutputFolder);
                     output.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
                     Directory.CreateDirectory(m_OutputFolder + "\\" + "ImageThumbnails");
-                    string folderMessage = this.CreateFolders(m_OutputFolder, imageYear, ImageMonth);
-                    string thumbailMessage = this.CreateFolders(m_OutputFolder + "\\" + "ImageThumbnails", ImgYear, ImgMonth);
+                    string folderMessage = this.CreateFolders(m_OutputFolder, imageYear, imageMonth);
+                    string thumbailMessage = this.CreateFolders(m_OutputFolder + "\\" + "ImageThumbnails", imageYear, imageMonth);
                     if (folderMessage != string.Empty || thumbailMessage != string.Empty)
                     {
                         throw new Exception("Folder Creation Error");

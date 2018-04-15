@@ -1,13 +1,11 @@
-﻿using ImageService.Infrastructure;
+﻿
 using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace ImageService.Modal
 {
@@ -39,70 +37,88 @@ namespace ImageService.Modal
         }
 
 
-        static DateTime getDate(string file)
+        private static Regex r = new Regex(":");
+
+        /*
+         * this function retrieves the image date, anc converts it to local ( machine) time
+         */
+        public static DateTime getImageDate(string path)
         {
-            //Creates a varialble with the current time.
-            DateTime thisTime = DateTime.Now;
-            //calculate the local time
-            TimeSpan calc = (thisTime - thisTime.ToUniversalTime());
-            DateTime finalDate = (File.GetLastWriteTimeUtc(file) + calc);
-            return finalDate;
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                using (Image img = Image.FromStream(fs, false, false))
+                {
+                    Console.WriteLine("trying to get date took pic");
+                    try
+                    {
+                        PropertyItem propItem = img.GetPropertyItem(36867);
+                        string dateTaken = r.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
+                        return DateTime.Parse(dateTaken).ToLocalTime();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("could not get date....taking last modified instead");
+                        return File.GetLastWriteTime(path).ToLocalTime();
+                    }
+                } // end of using
+            }
         }
 
         public string AddFile(string filePath, out bool creationResult)
         {
 
+            creationResult = false;
             string imageYear, imageMonth, logMessaage = String.Empty;
 
+            //extract the year and month from the date given by the path
+            DateTime date = getImageDate(filePath);
+
+            String yearFolder = m_OutputFolder + "\\" + date.Year.ToString();
+            String monthFolder = m_OutputFolder + "\\" + date.Month.ToString();
+            String thumbYearFolder = m_OutputFolder + "\\" + "Thumbnails" + "\\" + date.Year.ToString();
+            String thumbMonthFolder = m_OutputFolder + "\\" + "Thumbnails" + "\\" + date.Month.ToString();
+
+            DirectoryInfo y = new DirectoryInfo(yearFolder);
+            FileStream fs = null;
             try
             {
-                if (File.Exists(filePath))
+                // validate folder in  output for image
+                if (!y.Exists)
                 {
-                    //extract the year and month from the date given by the path
-                    DateTime currentDate = getDate(filePath);
-                    imageYear = currentDate.Year.ToString();
-                    imageMonth = currentDate.Month.ToString();
-                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-                    //create a new directory for the output folder
-                    DirectoryInfo output = Directory.CreateDirectory(m_OutputFolder);
-                    output.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
-                    Directory.CreateDirectory(m_OutputFolder + "\\" + "ImageThumbnails");
-                    string folderMessage = this.CreateFolders(m_OutputFolder, imageYear, imageMonth);
-                    string thumbailMessage = this.CreateFolders(m_OutputFolder + "\\" + "ImageThumbnails", imageYear, imageMonth);
-                    if (folderMessage != string.Empty || thumbailMessage != string.Empty)
-                    {
-                        throw new Exception("Folder Creation Error");
-                    }
-                    string currentFolderPath = m_OutputFolder + "\\" + ImgYear + "\\" + ImgMonth + "\\";
-                    if (!File.Exists(currentFolderPath + Path.GetFileName(filePath)))
-                    {
-                        File.Copy(filePath, currentFolderPath + Path.GetFileName(filePath));
-                        logMessaage = Path.GetFileName(filePath) + "Now Added to " + currentFolderPath;
-                    }
-                    if (!File.Exists((m_OutputFolder + "\\" + "ImageThumbnails" + "\\" + ImgYear + "\\" + ImgMonth + "\\" + Path.GetFileName(filePath))))
-                    {
-                    //    Image Imgthumbnail = Image.FromFile(filePath);
-                      //  Imgthumbnail = (Image)(new Bitmap(Imgthumbnail, new Size(this.m_thumbnailSize, this.m_thumbnailSize)));
-                      //  Imgthumbnail.Save(m_OutputFolder + "\\" + "ImageThumbnails" + "\\" + ImgYear + "\\" + ImgMonth + "\\" + Path.GetFileName(filePath));
-                        logMessaage += " And thumbnail - " + Path.GetFileName(filePath);
-                    }
-                    creationResult = true;
-                    return logMessaage;
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    y.Create();
                 }
-                else
+                DirectoryInfo m = new DirectoryInfo(monthFolder);
+                if (!m.Exists)
                 {
-                    throw new Exception("Exception: fail to add file because path do not exist");
+                    m.Create();
                 }
 
+                // validate folder int thumbnails
+                DirectoryInfo ty = new DirectoryInfo(thumbYearFolder);
+                if (!ty.Exists)
+                {
+                    ty.Create();
+                }
+                DirectoryInfo tm = new DirectoryInfo(thumbMonthFolder);
+                if (!tm.Exists)
+                {
+                    tm.Create();
+                }
+
+                fs = File.Create(filePath);
+                File.Move(filePath, monthFolder);
+                Console.WriteLine("{0} file  was moved to {1}.", filePath, monthFolder);
+
+                Image image = Image.FromFile(monthFolder);
+                Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
+                thumb.Save(Path.ChangeExtension(thumbMonthFolder, "thumb"));
             }
             catch (Exception e)
             {
-                creationResult = false;
-                return e.ToString();
+                Console.WriteLine("Could not move the file" + e.StackTrace);
+            } finally
+            {
+                fs.Close();
             }
         }
     }

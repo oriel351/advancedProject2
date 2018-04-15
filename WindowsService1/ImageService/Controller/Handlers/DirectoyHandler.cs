@@ -44,7 +44,11 @@ namespace ImageService.Controller.Handlers
             string[] files = Directory.GetFiles(m_path);
             //we want to add all the files in the directory to the output dir folder
             //so we move on each path in the current directory
-            //now we will filter the relevant files by their exstentions
+            //now
+
+
+
+            // e will filter the relevant files by their exstentions
             //we finaly want to add all the relevant files to the outputdir
             foreach (string filePathInDirectory in files)
             {
@@ -59,7 +63,8 @@ namespace ImageService.Controller.Handlers
                     OnCommandRecieved(this, e);
                 }
             }
-            //Add new file system event handler
+
+            //addind watcher 
             this.m_dirWatcher.Created += new FileSystemEventHandler(onCreate);
             this.m_dirWatcher.Changed += new FileSystemEventHandler(onCreate);
 
@@ -69,11 +74,56 @@ namespace ImageService.Controller.Handlers
 
         }
 
-        void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
-        {     // The Event that will be activated upon new Command
-
+        public void OnCloseHandler(object sender, DirectoryCloseEventArgs e)
+        {
+            try
+            {
+                // Don't listen to the dir
+                this.m_dirWatcher.EnableRaisingEvents = false;
+                // Remove from the event OnCommandReceived.
+                ((ImageServer)sender).CommandRecieved -= this.OnCommandRecieved;
+                this.m_logging.Log("Path Handler Closed - " + this.m_path, MessageTypeEnum.INFO);
+            }
+            catch (Exception e)
+            {
+                this.m_logging.Log("Failed To Close Path Handler - " + this.m_path + "-"
+                    + e.ToString(), MessageTypeEnum.FAIL);
+            }
         }
 
-        // Implement Here!
+
+        public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
+        {
+            bool currentResult;
+            string message = this.m_controller.ExecuteCommand(e.CommandID, e.Args, out currentResult);
+            // According to the current result - INFO if true, FAIL if not
+            if (currentResult)
+            {
+                //Log INFO
+                this.m_logging.Log(message, MessageTypeEnum.INFO);
+            }
+            else
+            {
+
+                //Log FAIL
+                this.m_logging.Log(message, MessageTypeEnum.FAIL);
+            }
+        }
+
+        private void onCreate(object sender, FileSystemEventArgs e)
+        {
+            this.m_logging.Log("onCreat - " + e.FullPath, MessageTypeEnum.INFO);
+            string extension = Path.GetExtension(e.FullPath);
+            // check that the file is an image.
+            if (this.m_imageSuffix.Contains(extension))
+            {
+                //Gets current arguments of the path
+                string[] args = { e.FullPath };
+                CommandRecievedEventArgs cmd = new CommandRecievedEventArgs((int)CommandEnum.NewFileCommand, args, "");
+                this.OnCommandRecieved(this, cmd);
+            }
+
+
+        }
     }
 }

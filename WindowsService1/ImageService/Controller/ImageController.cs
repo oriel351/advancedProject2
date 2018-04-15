@@ -25,7 +25,10 @@ namespace ImageService.Controller
         }
         public string ExecuteCommand(int commandID, string[] args, out bool resultSuccesful)
         {
-           // Write Code Here
+            // Write Code Here\
+            resultSuccesful = false;
+            String a = "oriel is the king";
+            return a;
         }
     }
 }

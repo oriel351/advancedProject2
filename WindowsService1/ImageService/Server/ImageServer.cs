@@ -20,9 +20,16 @@ namespace ImageService.Server
 
         #region Properties
         // The event that notifies about a new Command being recieved
-        public event EventHandler<CommandRecievedEventArgs> CommandRecieved; 
+        public event EventHandler<CommandRecievedEventArgs> CommandRecieved;
         #endregion
 
+        /*
+         * Constructor.
+         */
+        public ImageServer()
+        {
+
+        }
        
     }
 }

@@ -15,30 +15,15 @@ namespace ImageService.Commands
 
         public NewFileCommand(IImageServiceModal modal)
         {
-            m_modal = modal;            // Storing the Modal
+            m_modal = modal;      // Storing the Modal
         }
 
         public string Execute(string[] args, out bool result) 
         {
             // The String Will Return the New Path if result = true, and will return the error message
-            string filepath = args[0];
-            try
-            {
-                if (File.Exists(filepath) && filepath.Length > 0)
-                {
-                    return m_modal.AddFile(filepath, out result);
-
-                }
-                else
-                {
-                    throw new Exception("File path isnt valid");
-                }
-            }
-            catch(Exception e)
-            {
-                result = false;
-                return e.ToString();
-            }
+            result = false;
+            string filepath = args[0];           
+            return m_modal.AddFile(filepath, out result);
         }
     }
 }

@@ -1,21 +1,15 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System;
 using ImageService.Server;
 using ImageService.Controller;
 using ImageService.Modal;
 using ImageService.Logging;
-using ImageService.Logging.Modal;
 using System.Configuration;
-using ImageService.Infrastructure;
-
 
 
 
@@ -86,13 +80,12 @@ namespace WindowsImageService
         {
             eventLog1.WriteEntry("Oriel is the king and sapphire also");
 
+
             // Update the service state to Start Pending.  
             ServiceStatus serviceStatus = new ServiceStatus();
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-
-
            
 
             // Set up a timer to trigger every minute.  
@@ -103,37 +96,26 @@ namespace WindowsImageService
             timer.Enabled = true;
             timer.Start();
 
-
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
+
+            //this.modal = new IImageServiceModal();
 
         }
 
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
             // TODO: Insert monitoring activities here.  
+            this.eventId++;
             eventLog1.WriteEntry("Monitoring the System", EventLogEntryType.Information, eventId++);
         }
 
         protected override void OnStop()
         {
             eventLog1.WriteEntry("In onStop. seeemek");
-
-            // Update the service state to Start Pending.  
-            ServiceStatus serviceStatus = new ServiceStatus();
-            serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
-            serviceStatus.dwWaitHint = 100000;
-            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-
-
-            // Update the service state to Running.  
-            serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
-            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-
-
         }
-
 
         protected override void OnContinue()
         {

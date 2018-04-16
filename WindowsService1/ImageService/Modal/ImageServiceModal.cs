@@ -37,7 +37,7 @@ namespace ImageService.Modal
         }
 
 
-        private static Regex r = new Regex(":");
+       private static Regex r = new Regex(":");
 
         /*
          * this function retrieves the image date, anc converts it to local ( machine) time
@@ -68,7 +68,7 @@ namespace ImageService.Modal
         {
 
             creationResult = false;
-            string imageYear, imageMonth, logMessaage = String.Empty;
+            string logMessaage = String.Empty;
 
             //extract the year and month from the date given by the path
             DateTime date = getImageDate(filePath);
@@ -104,7 +104,6 @@ namespace ImageService.Modal
                 {
                     tm.Create();
                 }
-
                 fs = File.Create(filePath);
                 File.Move(filePath, monthFolder);
                 Console.WriteLine("{0} file  was moved to {1}.", filePath, monthFolder);
@@ -112,14 +111,24 @@ namespace ImageService.Modal
                 Image image = Image.FromFile(monthFolder);
                 Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
                 thumb.Save(Path.ChangeExtension(thumbMonthFolder, "thumb"));
+            }           
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine("Could not FIND the file" + e.StackTrace);                
+                return "Error Moving File";
             }
             catch (Exception e)
             {
                 Console.WriteLine("Could not move the file" + e.StackTrace);
-            } finally
+                return "Error Moving File";
+
+            }
+            finally
             {
                 fs.Close();
             }
+            creationResult = true;
+            return "Moving File Succeeded";
         }
     }
 }

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WindowsImageService")]
+[assembly: AssemblyTitle("ImageService")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WindowsImageService")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyProduct("ImageService")]
+[assembly: AssemblyCopyright("Copyright ©  2018 sapphier and oriel the queen and king")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -15,7 +15,7 @@ namespace ImageService.Modal
         public DirectoryCloseEventArgs(string dirPath, string message)
         {
             DirectoryPath = dirPath;                    // Setting the Directory Name
-            Message = message;                          // Storing the String
+            Message = message;                          // Storing the string
         }
 
     }

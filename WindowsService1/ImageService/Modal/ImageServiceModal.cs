@@ -18,13 +18,19 @@ namespace ImageService.Modal
         #endregion
 
 
+        public ImageServiceModal(string output, int thumbnailSize)
+        {
+            this.m_OutputFolder = output;
+            this.m_thumbnailSize = thumbnailSize;
+        }
+
         private string CreateFolders(string currentPath, string imageYear, string imageMonth)
         {
             try
             {
                 //we add two "\\" because one doesnt count
-                Directory.CreateDirectory(currentPath + "\\" + imageYear);
-                Directory.CreateDirectory(currentPath + "\\" + imageYear + "\\" + imageMonth);
+                Directory.CreateDirectory(Path.Combine(currentPath,imageYear));
+                Directory.CreateDirectory(Path.Combine(currentPath, imageYear, imageMonth));
                 //succesed returns empty
                 return string.Empty;
 
@@ -32,10 +38,9 @@ namespace ImageService.Modal
             catch (Exception e)
             {
                 //failed - throws exception
-                return e.ToString();
+                return e.Message;
             }
         }
-
 
        private static Regex r = new Regex(":");
 
@@ -44,42 +49,40 @@ namespace ImageService.Modal
          */
         public static DateTime getImageDate(string path)
         {
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (Image img = Image.FromStream(fs, false, false))
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    Console.WriteLine("trying to get date took pic");
-                    try
+                    using (Image img = Image.FromStream(fs, false, false))
                     {
                         PropertyItem propItem = img.GetPropertyItem(36867);
                         string dateTaken = r.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
                         return DateTime.Parse(dateTaken).ToLocalTime();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("could not get date....taking last modified instead");
-                        return File.GetLastWriteTime(path).ToLocalTime();
-                    }
-                } // end of using
+                    } // end of using
+                }
+            }
+            catch (Exception e)
+            {
+                return File.GetLastWriteTime(path).ToLocalTime();
             }
         }
-
+        
         public string AddFile(string filePath, out bool creationResult)
         {
+            
 
             creationResult = false;
-            string logMessaage = String.Empty;
+            string logMessaage = string.Empty;
 
             //extract the year and month from the date given by the path
             DateTime date = getImageDate(filePath);
 
-            String yearFolder = m_OutputFolder + "\\" + date.Year.ToString();
-            String monthFolder = m_OutputFolder + "\\" + date.Month.ToString();
-            String thumbYearFolder = m_OutputFolder + "\\" + "Thumbnails" + "\\" + date.Year.ToString();
-            String thumbMonthFolder = m_OutputFolder + "\\" + "Thumbnails" + "\\" + date.Month.ToString();
+            string yearFolder = m_OutputFolder + "\\" + date.Year.ToString();
+            string monthFolder = yearFolder + "\\" + date.Month.ToString();
+            string thumbYearFolder = m_OutputFolder + "\\" + "Thumbnails" + "\\" + date.Year.ToString();
+            string thumbMonthFolder = thumbYearFolder + "\\" + date.Month.ToString();
 
-            DirectoryInfo y = new DirectoryInfo(yearFolder);
-            FileStream fs = null;
+            DirectoryInfo y = new DirectoryInfo(yearFolder);            
             try
             {
                 // validate folder in  output for image
@@ -104,29 +107,29 @@ namespace ImageService.Modal
                 {
                     tm.Create();
                 }
-                fs = File.Create(filePath);
-                File.Move(filePath, monthFolder);
-                Console.WriteLine("{0} file  was moved to {1}.", filePath, monthFolder);
+                string fileName = Path.GetFileName(filePath);
+                string newFilePath = monthFolder + "\\" + fileName;
+                String newThumbPath = thumbMonthFolder + "\\" + fileName;
+                // generating thumbnail:
+                int count = 1;
+                while (File.Exists(newFilePath)) // check image doesnt exist already. if it does - add numeration
+                {
+                    newFilePath = monthFolder + "\\" + count.ToString() + fileName ;
+                    newThumbPath = thumbMonthFolder + "\\" + count.ToString() + fileName;
+                    count++;
+                }              
 
-                Image image = Image.FromFile(monthFolder);
+                Image image = Image.FromFile(filePath);
                 Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
-                thumb.Save(Path.ChangeExtension(thumbMonthFolder, "thumb"));
-            }           
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine("Could not FIND the file" + e.StackTrace);                
-                return "Error Moving File";
-            }
+                thumb.Save(Path.ChangeExtension(newThumbPath, "jpg"));
+                image.Dispose();
+                thumb.Dispose();
+                File.Move(filePath, newFilePath);        
+            }                       
             catch (Exception e)
             {
-                Console.WriteLine("Could not move the file" + e.StackTrace);
-                return "Error Moving File";
-
-            }
-            finally
-            {
-                fs.Close();
-            }
+                return e.Message;
+            }          
             creationResult = true;
             return "Moving File Succeeded";
         }

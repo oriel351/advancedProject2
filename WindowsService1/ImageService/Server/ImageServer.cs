@@ -2,12 +2,10 @@
 using ImageService.Controller.Handlers;
 using ImageService.Infrastructure.Enums;
 using ImageService.Logging;
+using ImageService.Logging.Modal;
 using ImageService.Modal;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ImageService.Server
 {
@@ -16,6 +14,8 @@ namespace ImageService.Server
         #region Members
         private IImageController m_controller;
         private ILoggingService m_logging;
+        private string outputDir;
+        string[] paths;
         #endregion
 
         #region Properties
@@ -26,10 +26,46 @@ namespace ImageService.Server
         /*
          * Constructor.
          */
-        public ImageServer()
+        public ImageServer(IImageController controller, ILoggingService log, string outDir, string [] path)
         {
-
+            this.m_controller = controller;
+            this.m_logging = log;
+            this.outputDir = outDir;
+            this.paths = path;
+            InitializeHandlers();
         }
+
+        private void InitializeHandlers()
+        {
+            foreach (string p in this.paths)
+            {
+                IDirectoryHandler a = new DirectoryHandler(this.m_logging, this.m_controller, p);
+                a.StartHandleDirectory(p);
+
+                a.DirectoryClose += HandlerSaysIWantToCloseMyself;
+                CommandRecieved += a.OnCommandRecieved;                
+            }          
+        }
+
+
+        private void HandlerSaysIWantToCloseMyself(object sender, DirectoryCloseEventArgs e)
+        {
+            this.CommandRecieved -= ((DirectoryHandler)sender).OnCommandRecieved;
+        }
+
+
+        public void StopServer()
+        {
+            foreach (string p in this.paths)
+            {
+                this.CommandRecieved?.Invoke(this, new CommandRecievedEventArgs((int)CommandEnum.CloseCommand, new string[] { }, p));
+            }
+            
+        }
+
+
+
+        
        
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Data;
+﻿using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.ServiceProcess;
@@ -10,6 +9,8 @@ using ImageService.Controller;
 using ImageService.Modal;
 using ImageService.Logging;
 using System.Configuration;
+using ImageService.Logging.Modal;
+
 
 
 
@@ -49,6 +50,7 @@ namespace WindowsImageService
         private IImageServiceModal modal;
         private IImageController controller;
         private ILoggingService logging;
+        
 
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
@@ -57,64 +59,66 @@ namespace WindowsImageService
         public ImageService(string [] args)
         {
             InitializeComponent();
-            string eventSourceName = "MySource";
-            string logName = "MyNewLog";
-            if (args.Count() > 0)
-            {
-                eventSourceName = args[0];
-            }
-            if (args.Count() > 1)
-            {
-                logName = args[1];
-            }
+            string eventSourceName = ConfigurationManager.AppSettings["SourceName"];
+            string logName = ConfigurationManager.AppSettings["LogName"];            
+            
             eventLog1 = new System.Diagnostics.EventLog();
+
             if (!System.Diagnostics.EventLog.SourceExists(eventSourceName))
             {
                 System.Diagnostics.EventLog.CreateEventSource(eventSourceName, logName);
             }
             eventLog1.Source = eventSourceName;
-            eventLog1.Log = logName;
+            eventLog1.Log = logName;            
         }
 
-        protected override void OnStart(string[] args)
-        {
+        private void CreateParts() {
+            // now reading from configuration file:            
+            string [] paths = ConfigurationManager.AppSettings["Handler"].Split(';');
+            string outputDir = ConfigurationManager.AppSettings["OutputDir"];
+            string sourceName = ConfigurationManager.AppSettings["SourceName"];
+            string logName = ConfigurationManager.AppSettings["LogName"];
+            int thumbnailSize = int.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]);
+
+            // model create:
+            this.modal = new ImageServiceModal(outputDir, thumbnailSize);
+
+            this.controller = new ImageController(this.modal);
+
+            // Logger create and assign to event(in LoggingService)
+            this.logging = new LoggingService();
+            this.logging.MessageRecieved += eventLog1_EntryWritten;
+            this.m_imageServer = new ImageServer(this.controller, this.logging, outputDir, paths);
+        }
+
+        protected override void OnStart(string[] args) {
+
             eventLog1.WriteEntry("Oriel is the king and sapphire also");
-
-
             // Update the service state to Start Pending.  
             ServiceStatus serviceStatus = new ServiceStatus();
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-           
 
-            // Set up a timer to trigger every minute.  
-            System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 60000; // 60 seconds  
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
-
-            timer.Enabled = true;
-            timer.Start();
+            // set things made by us
+            CreateParts();                        
 
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-
-
-            //this.modal = new IImageServiceModal();
-
-        }
-
-        public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
-        {
-            // TODO: Insert monitoring activities here.  
-            this.eventId++;
-            eventLog1.WriteEntry("Monitoring the System", EventLogEntryType.Information, eventId++);
-        }
+        }      
 
         protected override void OnStop()
         {
             eventLog1.WriteEntry("In onStop. seeemek");
+            // Update the service state to Start Pending.  
+            ServiceStatus serviceStatus = new ServiceStatus();
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_STOP_PENDING;
+            serviceStatus.dwWaitHint = 100000;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+            this.m_imageServer.StopServer();
+
+
         }
 
         protected override void OnContinue()
@@ -123,9 +127,22 @@ namespace WindowsImageService
             eventLog1.WriteEntry("Oriel and sapphire are the king ");
         }
 
-        private void eventLog1_EntryWritten(object sender, EntryWrittenEventArgs e)
+        private void eventLog1_EntryWritten(object sender, MessageRecievedEventArgs e)
         {
+            EventLogEntryType a = EventLogEntryType.Error;
 
+            switch (e.Status)            {
+                case MessageTypeEnum.FAIL:
+                    a = EventLogEntryType.FailureAudit;
+                    break;
+                case MessageTypeEnum.INFO:
+                    a = EventLogEntryType.Information;
+                    break;
+                case MessageTypeEnum.WARNING:
+                    a = EventLogEntryType.Warning;
+                    break;
+            }
+            this.eventLog1.WriteEntry(e.Message, a);
         }
     } // END OF CLASS
 }

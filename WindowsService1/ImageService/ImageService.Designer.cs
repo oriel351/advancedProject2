@@ -6,8 +6,7 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Diagnostics.EventLog eventLog1;
-        private int eventId = 1;
+        private System.Diagnostics.EventLog eventLog1;        
 
 
         /// <summary>
@@ -36,10 +35,6 @@
         {
             this.eventLog1 = new System.Diagnostics.EventLog();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
-            // 
-            // eventLog1
-            // 
-            this.eventLog1.EntryWritten += new System.Diagnostics.EntryWrittenEventHandler(this.eventLog1_EntryWritten);
             // 
             // ImageService
             // 

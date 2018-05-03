@@ -51,7 +51,8 @@ namespace WindowsImageService
         private IImageController controller;
         private ILoggingService logging;
         
-
+        
+       
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
         
@@ -69,7 +70,7 @@ namespace WindowsImageService
                 System.Diagnostics.EventLog.CreateEventSource(eventSourceName, logName);
             }
             eventLog1.Source = eventSourceName;
-            eventLog1.Log = logName;            
+            eventLog1.Log = logName;     
         }
 
         private void CreateParts() {
@@ -117,8 +118,6 @@ namespace WindowsImageService
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
             this.m_imageServer.StopServer();
-
-
         }
 
         protected override void OnContinue()

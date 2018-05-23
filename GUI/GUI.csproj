@@ -54,6 +54,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\LogsModel.cs" />
+    <Compile Include="Model\SettingsModel.cs" />
+    <Compile Include="ViewModel\LogsVM.cs" />
+    <Compile Include="ViewModel\SettingsVM.cs" />
     <Compile Include="View\Logs.xaml.cs">
       <DependentUpon>Logs.xaml</DependentUpon>
     </Compile>
@@ -107,5 +111,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

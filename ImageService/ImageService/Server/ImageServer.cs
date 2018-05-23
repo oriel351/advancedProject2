@@ -16,6 +16,10 @@ namespace ImageService.Server
         private ILoggingService m_logging;
         private string outputDir;
         string[] paths;
+
+
+
+
         #endregion
 
         #region Properties

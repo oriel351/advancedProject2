@@ -6,7 +6,48 @@
              xmlns:local="clr-namespace:GUI.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+    <StackPanel >
+
+        <StackPanel.Resources>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="10,0,0,0"/>
+            </Style>
+        </StackPanel.Resources>
+
+        <TextBlock Foreground="Blue" FontSize = "40" HorizontalAlignment="center" FontWeight="Bold">
+                        Settings
+        </TextBlock>
+
+        <Grid TextBlock.FontSize="20">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+
+            <TextBlock FontWeight="Bold">Output Directory:</TextBlock>
+            <TextBlock x:Name="output" Grid.Column="1">directory</TextBlock>
+
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1">Source Name:</TextBlock>
+            <TextBlock x:Name="source" Grid.Column="1" Grid.Row="1">source</TextBlock>
+
+            <TextBlock FontWeight="Bold" Grid.Column = "0" Grid.Row="2">Log Name:</TextBlock>
+            <TextBlock x:Name="logName" Grid.Column = "1" Grid.Row="2">source</TextBlock>
+
+            <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="3">Thumbnail Size:</TextBlock>
+            <TextBlock x:Name="thumbSize" Grid.Row="3" Grid.Column="1">120</TextBlock>
+
+        </Grid>
+
+        <Button x:Name="rmvButton" >Click Me</Button>
+
+
+    </StackPanel>
 </UserControl>

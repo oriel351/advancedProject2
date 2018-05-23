@@ -4,9 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GUI"
+        xmlns:views="clr-namespace:GUI.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+
+    <Grid x:Name="LayoutRoot" Background="pink" Width="400" Height="300">
+
+        <TabControl Margin="5">
+            <TabItem Header = "Settings">
+                <views:Settings></views:Settings>
+            </TabItem>
+            <TabItem Header="Logs">
+                <views:Logs></views:Logs>
+            </TabItem>
+        </TabControl>
     </Grid>
+
+
+
 </Window>

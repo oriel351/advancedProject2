@@ -18,7 +18,7 @@ namespace GUI.View
     /// <summary>
     /// Interaction logic for Logs.xaml
     /// </summary>
-    public partial class Logs : Page
+    public partial class Logs : UserControl
     {
         public Logs()
         {

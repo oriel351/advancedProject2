@@ -36,7 +36,8 @@ namespace ImageService.Controller.Handlers
             this.m_controller = imgController;
             this.m_path = dirPath;
             //the member that listen to the files in folder
-            this.m_dirWatcher = new FileSystemWatcher(this.m_path);                        
+            this.m_dirWatcher = new FileSystemWatcher(this.m_path);
+            // oriel is the king
         }
 
         public void StartHandleDirectory(string dirPath)

@@ -29,7 +29,7 @@ namespace ImageService.Controller
         {           
             resultSuccesful = false;
             ICommand a = this.commands[commandID];
-            return a.Execute(args, out resultSuccesful);            
+            return a.Execute(args, out resultSuccesful);       
         }
     }
 }

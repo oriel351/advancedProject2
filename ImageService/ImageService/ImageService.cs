@@ -42,8 +42,6 @@ namespace WindowsImageService
         public int dwWaitHint;
     };
 
-
-
     public partial class ImageService : ServiceBase
     {
         private ImageServer m_imageServer;          // The Image Server

@@ -1,5 +1,6 @@
 ﻿using ImageService.Controller;
 using ImageService.Controller.Handlers;
+using ImageService.ImageService.Server;
 using ImageService.Infrastructure.Enums;
 using ImageService.Logging;
 using ImageService.Logging.Modal;
@@ -14,6 +15,7 @@ namespace ImageService.Server
         #region Members
         private IImageController m_controller;
         private ILoggingService m_logging;
+        private TcpServer broad;
         private string outputDir;
         string[] paths;
 
@@ -36,6 +38,7 @@ namespace ImageService.Server
             this.m_logging = log;
             this.outputDir = outDir;
             this.paths = path;
+            this.broad = new TcpServer();
             InitializeHandlers();
         }
 

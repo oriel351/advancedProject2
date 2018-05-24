@@ -69,8 +69,6 @@ namespace ImageService.Modal
         
         public string AddFile(string filePath, out bool creationResult)
         {
-            
-
             creationResult = false;
             string logMessaage = string.Empty;
 

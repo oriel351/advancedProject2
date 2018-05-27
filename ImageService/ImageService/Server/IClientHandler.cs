@@ -10,5 +10,6 @@ namespace ImageService.ImageService.Server
     interface IClientHandler
     {
         void HandleClient(TcpClient client);
+        void SendData(TcpClient client, string data);
     }
 }

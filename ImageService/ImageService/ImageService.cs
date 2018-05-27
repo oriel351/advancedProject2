@@ -9,12 +9,8 @@ using ImageService.Controller;
 using ImageService.Modal;
 using ImageService.Logging;
 using System.Configuration;
-using ImageService.Logging.Modal;
-
-
-
-
-
+using SharedData;
+using System.Collections.Specialized;
 
 namespace WindowsImageService
 {
@@ -47,9 +43,9 @@ namespace WindowsImageService
         private ImageServer m_imageServer;          // The Image Server
         private IImageServiceModal modal;
         private IImageController controller;
+
         private ILoggingService logging;
-        
-        
+        private ConfigData config;
        
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
@@ -58,10 +54,12 @@ namespace WindowsImageService
         public ImageService(string [] args)
         {
             InitializeComponent();
-            string eventSourceName = ConfigurationManager.AppSettings["SourceName"];
-            string logName = ConfigurationManager.AppSettings["LogName"];            
+            NameValueCollection a;
             
+            string eventSourceName = ConfigurationManager.AppSettings["SourceName"];
+            string logName = ConfigurationManager.AppSettings["LogName"];                        
             eventLog1 = new System.Diagnostics.EventLog();
+           
 
             if (!System.Diagnostics.EventLog.SourceExists(eventSourceName))
             {
@@ -71,23 +69,39 @@ namespace WindowsImageService
             eventLog1.Log = logName;     
         }
 
+
+
+
         private void CreateParts() {
-            // now reading from configuration file:            
-            string [] paths = ConfigurationManager.AppSettings["Handler"].Split(';');
-            string outputDir = ConfigurationManager.AppSettings["OutputDir"];
-            string sourceName = ConfigurationManager.AppSettings["SourceName"];
-            string logName = ConfigurationManager.AppSettings["LogName"];
-            int thumbnailSize = int.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]);
+            // now reading from configuration file:
+            ConfigData conf =
+                new ConfigData
+                (
+                    ConfigurationManager.AppSettings["Handler"].Split(';'),
+                    ConfigurationManager.AppSettings["OutputDir"],
+                    ConfigurationManager.AppSettings["SourceName"],
+                    ConfigurationManager.AppSettings["LogName"],
+                    int.Parse(ConfigurationManager.AppSettings["ThumbnailSize"])
+                );
+            this.config = conf; 
+
+
+
 
             // model create:
-            this.modal = new ImageServiceModal(outputDir, thumbnailSize);
+            this.modal = new ImageServiceModal(conf.OutputDir, conf.ThumbnailSize);
 
-            this.controller = new ImageController(this.modal);
+            
 
             // Logger create and assign to event(in LoggingService)
+
             this.logging = new LoggingService();
             this.logging.MessageRecieved += eventLog1_EntryWritten;
-            this.m_imageServer = new ImageServer(this.controller, this.logging, outputDir, paths);
+
+            this.m_imageServer = new ImageServer(this.controller, this.logging, conf.OutputDir, conf.Paths);
+            this.controller = new ImageController(this.modal, this.logging,this.m_imageServer);
+
+            
         }
 
         protected override void OnStart(string[] args) {
@@ -120,15 +134,13 @@ namespace WindowsImageService
 
         protected override void OnContinue()
         {
-            eventLog1.WriteEntry("In OnContinue.");
-            eventLog1.WriteEntry("Oriel and sapphire are the king ");
+            eventLog1.WriteEntry("In OnContinue.");           
         }
-
+       
         private void eventLog1_EntryWritten(object sender, MessageRecievedEventArgs e)
         {
             EventLogEntryType a = EventLogEntryType.Error;
-
-            switch (e.Status)            {
+            switch (e.Status) {
                 case MessageTypeEnum.FAIL:
                     a = EventLogEntryType.FailureAudit;
                     break;
@@ -139,7 +151,8 @@ namespace WindowsImageService
                     a = EventLogEntryType.Warning;
                     break;
             }
-            this.eventLog1.WriteEntry(e.Message, a);
+            this.eventLog1.WriteEntry(e.Message, a);                       
         }
+     
     } // END OF CLASS
 }

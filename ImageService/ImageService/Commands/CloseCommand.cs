@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 namespace ImageService.ImageService.Commands
 {
     class CloseCommand : ICommand
-    {
-        
-        
-
+    {  
         public string Execute(string[] args, out bool result)
         {
             result = false;
             string filepath = args[0];
+
 
         }
     }

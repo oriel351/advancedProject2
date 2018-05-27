@@ -1,9 +1,15 @@
-﻿using System;
+﻿using ImageService.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SharedData;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ImageService.ImageService.Server
@@ -13,13 +19,17 @@ namespace ImageService.ImageService.Server
         private int port;
         private TcpListener listener;
         private IClientHandler ch;
-
+        private List<TcpClient> clients;
+        Mutex mux;
         
 
-        public TcpServer(int port, IClientHandler ch)
+        public TcpServer(int port, IClientHandler ch, ILoggingService m_logging)
         {
             this.port = port;
             this.ch = ch;
+            this.clients = new List<TcpClient>();
+            this.mux = new Mutex();
+            m_logging.MessageRecieved += SpreadLogEntry;
         }
 
         public void start()
@@ -36,7 +46,8 @@ namespace ImageService.ImageService.Server
                     try
                     {
                         TcpClient client = listener.AcceptTcpClient();
-                        Console.WriteLine("Got new connection");
+                        this.clients.Add(client);
+                        Console.WriteLine("Got new connection");                       
                         ch.HandleClient(client);
                     }
                     catch (SocketException)
@@ -50,7 +61,13 @@ namespace ImageService.ImageService.Server
         }
 
 
-
+        public void SpreadLogEntry(Object sender, MessageRecievedEventArgs e)
+        {
+            foreach (TcpClient client in this.clients)
+            {
+                this.ch.SendData(client, JsonConvert.SerializeObject(e));               
+            }
+        }
 
     }
 }

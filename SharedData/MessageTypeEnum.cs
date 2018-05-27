@@ -1,6 +1,6 @@
 ﻿
 
-namespace ImageService.Logging.Modal
+namespace SharedData
 {
     //message status 
     public enum MessageTypeEnum : int

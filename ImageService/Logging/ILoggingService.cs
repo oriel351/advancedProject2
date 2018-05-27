@@ -1,4 +1,4 @@
-﻿using ImageService.Logging.Modal;
+﻿using SharedData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,9 @@ namespace ImageService.Logging
 {
     public interface ILoggingService
     {
-        event EventHandler<MessageRecievedEventArgs> MessageRecieved;
+        event EventHandler<MessageRecievedEventArgs> MessageRecieved;    
         void Log(string message, MessageTypeEnum type);   // Logging the Message
+      
+        
     }
 }

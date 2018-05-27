@@ -8,10 +8,7 @@ using System.Threading.Tasks;
 using ImageService.Infrastructure;
 using ImageService.Infrastructure.Enums;
 using ImageService.Logging;
-using ImageService.Logging.Modal;
-
-
-
+using SharedData;
 
 namespace ImageService.Controller.Handlers
 {
@@ -40,6 +37,9 @@ namespace ImageService.Controller.Handlers
             // oriel is the king
         }
 
+
+       
+
         public void StartHandleDirectory(string dirPath)
         {
             //getting the info of the message about the path
@@ -63,17 +63,16 @@ namespace ImageService.Controller.Handlers
             {
                 if(e.CommandID == (int)CommandEnum.CloseCommand) 
                 {
-                    SelfKill();
+                    OnCloseHandlerCommand();
                     DirectoryClose?.Invoke(this, new DirectoryCloseEventArgs(this.m_path,"Closing Handler"));
                     this.m_logging.Log("Closing handler for folder:" + this.m_path, MessageTypeEnum.INFO);
                 }
             }
-
         } 
        
-        void SelfKill()
-        {
-            this.m_logging.Log("SELF KILL:" + this.m_path, MessageTypeEnum.INFO);
+        void OnCloseHandlerCommand()
+        {            
+            this.m_logging.Log("close handler:" + this.m_path, MessageTypeEnum.INFO);
             this.m_dirWatcher.Created -= new FileSystemEventHandler(OnFileArrive);
             this.m_dirWatcher.EnableRaisingEvents = false;
         }

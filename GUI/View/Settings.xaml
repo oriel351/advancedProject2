@@ -33,17 +33,18 @@
 
 
             <TextBlock FontWeight="Bold">Output Directory:</TextBlock>
-            <TextBlock x:Name="output" Grid.Column="1">directory</TextBlock>
+            <TextBlock x:Name="output" Grid.Column="1" Text="{Binding OutputDir}"></TextBlock>
 
             <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1">Source Name:</TextBlock>
-            <TextBlock x:Name="source" Grid.Column="1" Grid.Row="1">source</TextBlock>
+            <TextBlock x:Name="source" Grid.Column="1" Grid.Row="1" Text="{Binding SrcName}"></TextBlock>
 
             <TextBlock FontWeight="Bold" Grid.Column = "0" Grid.Row="2">Log Name:</TextBlock>
-            <TextBlock x:Name="logName" Grid.Column = "1" Grid.Row="2">source</TextBlock>
+            <TextBlock x:Name="logName" Grid.Column = "1" Grid.Row="2" Text="{Binding LogName}"></TextBlock>
 
             <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="3">Thumbnail Size:</TextBlock>
-            <TextBlock x:Name="thumbSize" Grid.Row="3" Grid.Column="1">120</TextBlock>
+            <TextBlock x:Name="thumbSize" Grid.Row="3" Grid.Column="1" Text="{Binding ThumbnailSize"></TextBlock>
 
+            
         </Grid>
 
         <Button x:Name="rmvButton" >Click Me</Button>

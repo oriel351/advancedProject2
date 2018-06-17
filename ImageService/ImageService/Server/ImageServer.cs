@@ -62,14 +62,14 @@ namespace ImageService.Server
                 IDirectoryHandler a = new DirectoryHandler(this.m_logging, this.m_controller, p);
                 a.StartHandleDirectory(p);
 
-                a.DirectoryClose += HandlerSaysIWantToCloseMyself;
-                CommandRecieved += a.OnCommandRecieved;                
+                a.DirectoryClose += OnHandlerCloseCommand;
+                this.CommandRecieved += a.OnCommandRecieved;
             }          
         }
 
-
-        private void HandlerSaysIWantToCloseMyself(object sender, DirectoryCloseEventArgs e)
+        private void OnHandlerCloseCommand(object sender, DirectoryCloseEventArgs e)
         {
+            
             this.CommandRecieved -= ((DirectoryHandler)sender).OnCommandRecieved;
         }
 
@@ -87,9 +87,11 @@ namespace ImageService.Server
         }
 
         
+
+        
         private void OnLogEvent(object sender, MessageRecievedEventArgs e)
         {
-            this.
+           
         }
 
         public void CloseHandler()

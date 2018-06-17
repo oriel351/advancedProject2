@@ -69,5 +69,8 @@ namespace ImageService.ImageService.Server
             }
         }
 
+
+        public void S
+
     }
 }

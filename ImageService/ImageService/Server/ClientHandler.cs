@@ -25,7 +25,7 @@ namespace ImageService.ImageService.Server
         public ClientHandler(IImageController m_controller)
         {
             this.m_controller = m_controller;
-            this.mux = new Mutex()
+            this.mux = new Mutex();
         }
         public void HandleClient(TcpClient client)
         {
@@ -38,11 +38,8 @@ namespace ImageService.ImageService.Server
                     while (client.Connected)
                     {
                         string commandLine = reader.ReadToEnd();
-                        CommandRecievedEventArgs cmd = JsonConvert.DeserializeObject
-                        <CommandRecievedEventArgs>(commandLine);
-
+                        CommandRecievedEventArgs cmd = GetData(commandLine);
                         int command = cmd.CommandID;
-
 
                         switch (command)
                         {
@@ -51,7 +48,7 @@ namespace ImageService.ImageService.Server
                                 SendData(client, data);
                                 break;
                             case (int)CommandEnum.LogCommand:                                
-                                data = this.m_controller.ExecuteCommand                                
+                                data = this.m_controller.ExecuteCommand
                                 (command, null, out result);
                                 SendData(client, data);
                                 break;
@@ -62,21 +59,12 @@ namespace ImageService.ImageService.Server
                     }
                     
 
-                    bool suc;                    
-                    string result = this.m_controller.ExecuteCommand(Int32.Parse(commandLine), null, out suc);
-
-                    writer.Write(result);
+                   
                 }
                 client.Close();
             }).Start();
 
-        }      
-
-        private string getConfig()
-        {
-
         }
-
 
         private void SendData(TcpClient client, string data)
         {
@@ -96,11 +84,7 @@ namespace ImageService.ImageService.Server
             {
                 
             }
-        }
-
-
-
-
+        }        
 
         public CommandRecievedEventArgs GetData(string data)
         {

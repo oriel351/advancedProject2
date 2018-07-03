@@ -1,4 +1,4 @@
-﻿using GlobalClasses.Modal;
+﻿//using GlobalClasses.Modal;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,15 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-
+using SharedData;
 namespace GUI.Model
 {
-    class LogsModel
+    class LogsModel : ILogsModel
     {
        // class LogModel : ILogModel
        // {
             private ObservableCollection<LogObject> logs { get; set; }
-            //private IClientGUI logClient;
+            //we need to create a client that will talk to the server - oriel
+            private IClientGUI logClient;
             public event PropertyChangedEventHandler PropertyChanged;
 
 
@@ -40,7 +41,7 @@ namespace GUI.Model
                     Console.WriteLine("client of the log is not connected");
                 }
             }
-            /*
+            
             private void GetPrevLogs()
             {
                 this.logs = new ObservableCollection<LogObject>();
@@ -49,11 +50,8 @@ namespace GUI.Model
                 CommandRecievedEventArgs commandRecievedEventArgs = new CommandRecievedEventArgs((int)CommandEnum.LogCommand, null, "");
                 this.logClient.WriteCommandToServer(commandRecievedEventArgs);
             }
-            /// <summary>
             /// This method is a delegate signed to the ClientGUI updatorEvent. every time the client gets a command
             /// from the server it invokes his event and therefore this delegate.
-            /// </summary>
-            /// <param name="args"></param>
             private void Updater(CommandRecievedEventArgs args)
             {
                 if (args != null)
@@ -99,7 +97,7 @@ namespace GUI.Model
                     Console.WriteLine(e.ToString());
                 }
             }
-            */
+            
         }
     //}
 

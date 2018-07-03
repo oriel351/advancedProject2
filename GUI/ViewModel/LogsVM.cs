@@ -6,7 +6,7 @@ using System.Windows.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GlobalClasses.Modal;
+using SharedData;
 
 namespace GUI.Model
 {

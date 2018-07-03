@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigData.cs" />
+    <Compile Include="converenumlog.cs" />
     <Compile Include="LogObject.cs" />
     <Compile Include="MessageRecievedEventArgs.cs" />
     <Compile Include="MessageTypeEnum.cs" />
